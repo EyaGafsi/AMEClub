@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="template">
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<head>
+  <meta charset="utf-8">
+  <title>Liste des demandes de paticipation</title>
+</head>
+<body>
+
+<div th:insert="template.html"></div>
+<section layout:fragment="navbar">
+  <div class="container">
+    <!-- <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherProduit}">
+       <div class="input-group">
+         <input  type="search" class="form-control rounded " placeholder="Rechercher" aria-label="Search" aria-describedby="search-addon" name="nom" id="searchInput">
+         <button type="submit" class="btn btn-outline-primary">Rechercher</button></div>
+     </form>-->
+
+    <div class="card">
+      <div class="card-header">
+        Liste des demandes de participation dans une activité
+      </div>
+      <div class="card-body">
+
+        <select name="clubId" id="clubFilter" onchange="applyFilter()">
+          <option value="">Sélectionnez un club</option>
+          <option th:each="club : ${clubs}" th:value="${club.ClubId}" th:text="${club.nomClub}" th:if="${club.president.username ==users.username}"  ></option>
+        </select>
+        <table class="table table-striped" id="table">
+          <tr>
+            <th>Nom </th><th>prénom</th><th>nom de l'activité</th><th>nom du club</th><th>date d'envoi</th> <th></th>
+          </tr>
+          <tr class="data-row" th:each="c:${demandeParticipation}" th:if="${c.status == 'en attente' && c.id.activite.club.president.username ==users.username}" th:attr="data-club-id=${c.id.activite.club.ClubId}">
+            <td th:text="${c.id.user.nom}"></td>
+            <td th:text="${c.id.user.prenom}"></td>
+            <td th:text="${c.id.activite.nomActivite}"></td>
+            <td th:text="${c.id.activite.club.nomClub}"></td>
+            <td th:text="${c.dateEnvoi}"></td>
+            <td>
+              <a onclick="return confirm('Etes-vous sûr ?')"
+                 class="btn btn-success" th:href="@{accepterDemandeParticipation(userId=${c.id.user.userId},activiteId=${c.id.activite.activiteId},size=${size})}">accepter</a>
+
+              <a onclick="return confirm('Etes-vous sûr ?')"
+                 class="btn btn-danger" th:href="@{refuserDemandeParticipation(userId=${c.id.user.userId},activiteId=${c.id.activite.activiteId},size=${size})}">refuser</a>
+            </td>
+          </tr>
+        </table>
+        <ul class="nav nav-pills">
+          <li th:each="page,status:${pages}">
+            <a th:class="${status.index==currentPage?'btn btn-primary':'btn'}"
+               th:href="@{ListDemandeParticipation(nom=${nom},page=${status.index}, size=${size} )}"
+               th:text="${status.index }"></a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  <script th:inline="javascript">
+    function applyFilter() {
+      var selectedClubId = document.getElementById("clubFilter").value;
+      var tableRows = document.getElementsByClassName("data-row");
+
+      for (var i = 0; i < tableRows.length; i++) {
+        var row = tableRows[i];
+        var clubId = row.getAttribute("data-club-id");
+
+        if (selectedClubId === "" || clubId === selectedClubId) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      }
+    }
+  </script>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="template">
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<head>
+  <meta charset="utf-8">
+  <title>Create club</title>
+</head>
+<body>
+<div th:insert="template.html"></div>
+<div layout:fragment="navbar">
+  <div class="container">
+    <div class="card-body">
+      <form action="saveActivite" method="post">
+        <div class="form-group">
+          <label class="control-label">Nom de l'activite :</label>
+          <input type="text" name="nomActivite" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">lieu:</label>
+          <input type="text" name="lieu" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">date :</label>
+          <input type="date" name="dateActivite" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">prix activite :</label>
+          <input type="text" name="prixActivite" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label class="control-label">sujet :</label>
+          <input type="text" name="sujet" class="form-control"/>
+        </div>
+        <select name="clubs.clubId">
+          <option value="">Sélectionnez un club</option>
+          <option th:each="club:${clubs}" th:value="${club.clubId}" th:text="${club.nomClub}" th:if="${club.president.username ==users.username}" ></option>
+        </select>
+
+        <input hidden="true" type="text" id="selectedClubText" name="clubId" readonly>
+
+        <script>
+          document.getElementById("clubSelect").addEventListener("change", function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var selectedValue = selectedOption.value;
+
+            document.getElementById("selectedClubText").value = selectedValue;
+          });
+        </script>
+        <div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </div>
+      </form>
+    </div>
+    <div th:if="${msg}">
+      <p th:text="'Message: '+${msg}"/>
+    </div>
+    <br/>
+    <br/>
+  </div>
+</div>
+</body>
+</html>

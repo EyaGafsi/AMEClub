@@ -1,0 +1,13 @@
+package com.iset.ameclub;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AmeClubApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AmeClubApplication.class, args);
+    }
+
+}

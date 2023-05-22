@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="template">
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<head>
+  <meta charset="utf-8">
+  <title>Liste des demandes clubs</title>
+</head>
+<body>
+
+<div th:insert="template.html"></div>
+<section layout:fragment="navbar">
+  <div class="container">
+    <!-- <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherProduit}">
+       <div class="input-group">
+         <input  type="search" class="form-control rounded " placeholder="Rechercher" aria-label="Search" aria-describedby="search-addon" name="nom" id="searchInput">
+         <button type="submit" class="btn btn-outline-primary">Rechercher</button></div>
+     </form>-->
+
+    <div class="card">
+      <div class="card-header">
+        Liste des demandes clubs
+      </div>
+      <div class="card-body">
+
+        <table class="table table-striped" >
+          <tr>
+            <th>Nom </th><th>nombre membres</th> <th>date de création</th><th>nom du president</th><th>prenom du president</th><th>date d'envoi</th>
+          </tr>
+          <tr class="data-row" th:each="c:${demandeClub}" th:if="${c.status == 'en attente' }">
+            <td th:text="${c.nomClub}"></td>
+            <td th:text="${c.nbMembre}"></td>
+            <td th:text="${c.dateCreation}"></td>
+            <td th:text="${c.user.nom}"></td>
+            <td th:text="${c.user.prenom}"></td>
+            <td th:text="${c.dateEnvoi}"></td>
+            <td>
+              <a onclick="return confirm('Etes-vous sûr ?')"
+                 class="btn btn-success" th:href="@{accepterDemandeClub(demandeId=${c.demandeId},size=${size})}">accepter</a>
+
+              <a onclick="return confirm('Etes-vous sûr ?')"
+                 class="btn btn-danger" th:href="@{refuserDemandeClub(demandeId=${c.demandeId},size=${size})}">refuser</a>
+            </td>
+          </tr>
+        </table>
+        <ul class="nav nav-pills">
+          <li th:each="page,status:${pages}">
+            <a th:class="${status.index==currentPage?'btn btn-primary':'btn'}"
+               th:href="@{ListDemandeClub(nom=${nom},page=${status.index}, size=${size} )}"
+               th:text="${status.index }"></a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="template">
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<head>
+  <meta charset="utf-8">
+  <title>Liste des Activités</title>
+</head>
+<body>
+<div th:insert="template.html"></div>
+<section layout:fragment="navbar">
+  <div class="container">
+    <!-- <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherProduit}">
+       <div class="input-group">
+         <input  type="search" class="form-control rounded " placeholder="Rechercher" aria-label="Search" aria-describedby="search-addon" name="nom" id="searchInput">
+         <button type="submit" class="btn btn-outline-primary">Rechercher</button></div>
+     </form>-->
+
+    <div class="card">
+      <div class="card-header">
+        Liste des Activités
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <tr>
+            <th>Nom Activite</th><th>lieu</th><th>date</th> <th>prix</th><th>sujet</th><th>nom du club</th><th></th>
+          </tr>
+          <tr th:each="a:${activites}">
+            <td th:text="${a.nomActivite}"></td>
+            <td th:text="${a.lieu}"></td>
+            <td th:text="${a.dateActivite}"></td>
+            <td th:text="${a.prixActivite}"></td>
+            <td th:text="${a.sujet}"></td>
+            <td th:text="${a.club.nomClub}"></td>
+            <td>
+              <div th:if="${a.demandeStatus}=='en attente'">
+                <form action="annulerDemandeActivite" method="post">
+                  <input hidden="true" type="text" name="activiteId" class="form-control" th:value="${a.activiteId}" />
+                  <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
+                  <button type="submit" class="btn btn-primary">annuler</button>
+
+                </form>    </div>
+              <div th:if="${a.demandeStatus != 'en attente' && a.demandeStatus != 'aucune demande' && a.demandeStatus != 'annulé'}">
+                <span th:text="${a.demandeStatus}"></span>
+              </div>
+              <div th:if="${a.demandeStatus =='aucune demande' || a.demandeStatus =='annulé'}">
+              <form action="saveDemandeActivite" method="post">
+                <input hidden="true" type="text" name="activiteId" class="form-control" th:value="${a.activiteId}" />
+                <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
+                <button type="submit" class="btn btn-primary">s'inscrire</button>
+
+              </form>
+
+              </div>
+            </td>
+
+
+          </tr>
+        </table>
+        <ul class="nav nav-pills">
+          <li th:each="page,status:${pages}">
+            <a th:class="${status.index==currentPage?'btn btn-primary':'btn'}"
+               th:href="@{ListeActivite(nom=${nom},page=${status.index}, size=${size} )}"
+               th:text="${status.index }"></a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
