@@ -37,7 +37,9 @@
           <option value="">Sélectionnez un club</option>
           <option th:each="club:${clubs}" th:value="${club.clubId}" th:text="${club.nomClub}" th:if="${club.president.username ==users.username}" ></option>
         </select>
-
+        <div th:if="${msg}">
+          <p th:text="'Message: ' + ${msg}"/>
+        </div>
         <input hidden="true" type="text" id="selectedClubText" name="clubId" readonly>
 
         <script>

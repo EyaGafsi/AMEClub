@@ -94,10 +94,13 @@
         <label class="control-label">Confirmer le mot de passe:</label>
         <input type="password" name="confirmedPassword" class="form-control" required>
       </div>
+      <div th:if="${msg}">
+        <p th:text="'Message: ' + ${msg}"/>
+      </div>
       <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
       <div class="login-link">
         Vous avez déjà un compte? <a th:href="@{/login}">Se connecter</a>
       </div>
     </form>
   </div>
-</
+</div></body></html>

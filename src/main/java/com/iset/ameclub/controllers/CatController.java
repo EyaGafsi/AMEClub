@@ -42,7 +42,7 @@ public class CatController {
     @Autowired
     UserServiceImpl userServiceImp;
     private PasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
-    @PreAuthorize("hasRole('VISITEUR') || hasRole('MEMBRE') || hasRole('PRESIDENT')")
+        @PreAuthorize("hasRole('VISITEUR') || hasRole('MEMBRE') || hasRole('PRESIDENT')|| hasRole('ADMIN')")
     @RequestMapping("/ListeClub")
     public String listeClub(@AuthenticationPrincipal UserDetails userDetails,
             ModelMap modelMap,@RequestParam(name = "nom", defaultValue = "") String nom,
@@ -440,7 +440,7 @@ public class CatController {
                                      @RequestParam(name = "size", defaultValue = "5") int size) {
 
         User user=userService.getById(id);
-        Role role = roleRepository.findByName("Membre");
+        Role role = roleRepository.findByName("ROLE_Membre");
         user.getRoles().remove(role);
         Club club=clubService.getClub(idClub);
         user.getClubs().remove(club);
@@ -556,8 +556,8 @@ public class CatController {
     @PreAuthorize("hasRole('PRESIDENT')")
     @PostMapping("/updateActivite")
     public String updateActivite(@ModelAttribute("activite") Activite activite,@RequestParam(name = "nom", defaultValue = "") String nom,@RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "5") int size,
-                               ModelMap modelMap )throws ParseException
+                                 @RequestParam(name = "size", defaultValue = "5") int size,
+                                 ModelMap modelMap )throws ParseException
     {
         activiteService.updateActivite(activite);
         Page<Activite> formats = activiteService.getAllActiviteParPage(nom,page, size);
@@ -566,5 +566,86 @@ public class CatController {
         modelMap.addAttribute("currentPage", page);
         modelMap.addAttribute("size", size);
         return "redirect:/listeActiviteClub";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/modifierClub")
+    public String editerClub(@RequestParam("id") Long id,ModelMap modelMap)
+    {    Club c= clubService.getClub(id);
+        modelMap.addAttribute("club", c);
+        return "editerClub";
+
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/updateClub")
+    public String updateClub(@ModelAttribute("club") Club club,@RequestParam(name = "nom", defaultValue = "") String nom,@RequestParam(name = "page", defaultValue = "1") int page,
+                                 @RequestParam(name = "size", defaultValue = "5") int size,
+                                 ModelMap modelMap )throws ParseException
+    {
+        clubService.updateClub(club);
+        Page<Club> formats = clubService.getAllClubsParPage(nom,page, size);
+        modelMap.addAttribute("clubs", formats);
+        modelMap.addAttribute("pages", new int[formats.getTotalPages()]);
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("size", size);
+        return "redirect:/ListeClub";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/supprimerClub")
+    public String supprimerClub(@RequestParam("id") Long id, ModelMap
+            modelMap,
+                                  @RequestParam(name = "page", defaultValue = "0") int page,
+                                  @RequestParam(name = "size", defaultValue = "5") int size) {
+
+
+        Club club=clubService.getClub(id);
+        User user=userService.getById(club.getPresident().getUserId());
+        Role role = roleRepository.findByName("ROLE_PRESIDENT");
+        user.getRoles().remove(role);
+        userServiceImp.saveUser(user);
+        clubService.save(club);
+        clubService.deleteClubById(id);
+        Page<User> formats = userServiceImp.getAllUserParPage(page, size);
+        modelMap.addAttribute("clubs", formats);
+        modelMap.addAttribute("pages", new int[formats.getTotalPages()]);
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("size", size);
+        return "redirect:/ListeClub";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/showClub")
+    public String showClub(@ModelAttribute("club") Club club,@ModelAttribute("president") User user,ModelMap modelMap)
+    { modelMap.addAttribute("club",user);
+
+        modelMap.addAttribute("club",user);
+        return "ajouterClub";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping("/saveClub")
+    public String saveClub(@ModelAttribute("club") Club club,@ModelAttribute("president") User user,
+                             ModelMap modelMap) throws ParseException {
+
+        club.setPresident(user);
+        Role role = roleRepository.findByName("ROLE_PRESIDENT");
+        user.getRoles().add(role);
+        user.getClub().add(club);
+        userService.save(user);
+        clubService.save(club);
+        String msg = "club ajouté";
+        modelMap.addAttribute("msg", msg);
+
+        return "ajouterClub";
+    }
+    @PreAuthorize("hasRole('VISITEUR') || hasRole('ADMIN')")
+    @RequestMapping("/rechercherClub")
+    public String rechercherClub(@RequestParam("nom") String nom, ModelMap modelMap,
+                                      @RequestParam(name = "page", defaultValue = "0") int page,
+                                      @RequestParam(name = "size", defaultValue = "6") int size) {
+        Page<Club> prods = clubService.findByNomClub(nom, PageRequest.of(page, size));
+        modelMap.addAttribute("clubs", prods);
+        modelMap.addAttribute("pages", new int[prods.getTotalPages()]);
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("size", size);
+        modelMap.addAttribute("nom", nom);
+        return "listeClub";
     }
 }

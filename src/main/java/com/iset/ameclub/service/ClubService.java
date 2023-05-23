@@ -17,5 +17,6 @@ public interface ClubService {
     Club save(Club c);
     Page<Club> getClubsByPresident(User president, int page, int size);
 
-
+    Club updateClub(Club m);
+    void deleteClubById(Long id);
 }

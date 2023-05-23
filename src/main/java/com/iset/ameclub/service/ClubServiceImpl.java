@@ -1,6 +1,7 @@
 package com.iset.ameclub.service;
 
 import com.iset.ameclub.dao.ClubRepository;
+import com.iset.ameclub.entities.Activite;
 import com.iset.ameclub.entities.Club;
 import com.iset.ameclub.entities.DemandeMembre;
 import com.iset.ameclub.entities.User;
@@ -50,5 +51,12 @@ public class ClubServiceImpl implements ClubService{
         return clubRepository.findByPresident(president,pageable);
     }
 
+    @Override
+    public Club updateClub(Club m) {
+        return clubRepository.save(m);
+    }
 
+    @Override
+    public void deleteClubById(Long id) {
+        clubRepository.deleteById(id); }
 }

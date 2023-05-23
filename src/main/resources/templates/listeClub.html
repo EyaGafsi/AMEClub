@@ -12,11 +12,11 @@
 <div th:insert="template.html"></div>
 <section layout:fragment="navbar">
   <div class="container">
-   <!-- <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherProduit}">
+   <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherClub}">
       <div class="input-group">
         <input  type="search" class="form-control rounded " placeholder="Rechercher" aria-label="Search" aria-describedby="search-addon" name="nom" id="searchInput">
         <button type="submit" class="btn btn-outline-primary">Rechercher</button></div>
-    </form>-->
+    </form>
 
     <div class="card">
       <div class="card-header">
@@ -26,31 +26,42 @@
 
         <table class="table table-striped" >
           <tr>
-            <th>Nom club</th><th>nombre membre</th><th>date de création</th> <th>nom du président</th><th></th>
+            <th>Nom club</th><th>nombre membre</th><th>date de création</th> <th>nom du président</th><th></th><th></th><th sec:authorize="hasRole('ADMIN')"></th>
           </tr>
           <tr th:each="c:${clubs}">
             <td th:text="${c.nomClub}"></td>
             <td th:text="${c.nbMembre}"></td>
-            <td th:text="${c.dateCreation}"></td>
+            <td th:text="${#dates.format(c.dateCreation, 'yyyy-MM-dd')}"></td>
             <td th:text="${c.president.prenom}"></td>
             <td>
             <td>
-              <div th:if="${c.demandeStatus}=='en attente'">
+              <div th:if="${c.demandeStatus}=='en attente'" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
                 <form action="annulerDemandeMembre" method="post">
                   <input hidden="true" type="text" name="clubId" class="form-control" th:value="${c.clubId}" />
                   <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
                   <button type="submit" class="btn btn-primary">annuler</button>
                 </form>    </div>
-              <div th:if="${c.demandeStatus != 'en attente' && c.demandeStatus != 'aucune demande' && c.demandeStatus != 'annulé'}">
+              <div th:if="${c.demandeStatus != 'en attente' && c.demandeStatus != 'aucune demande' && c.demandeStatus != 'annulé'}" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
                 <span th:text="${c.demandeStatus}"></span>
               </div>
-              <div th:if="${c.demandeStatus =='aucune demande' || c.demandeStatus =='annulé'}">
+              <div th:if="${c.demandeStatus =='aucune demande' || c.demandeStatus =='annulé'}" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
               <form action="saveDemandeMembre" method="post">
                 <input hidden="true" type="text" name="clubId" class="form-control" th:value="${c.clubId}" />
                 <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
                 <button type="submit" class="btn btn-primary">s'inscrire</button>
               </form>
               </div>
+            <td sec:authorize="hasRole('ADMIN')">
+              <a class="btn btn-warning" th:href="@{/modifierClub(id=${c.clubId})}">
+                Modifier
+              </a>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')">
+              <a class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?')"
+                 th:href="@{supprimerClub(id=${c.clubId}, page=${currentPage},size=${size})}">
+                Supprimer
+              </a>
+            </td>
 
             </td>
 
