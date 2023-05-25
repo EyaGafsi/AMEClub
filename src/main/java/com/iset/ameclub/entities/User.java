@@ -5,6 +5,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.*;
 
@@ -14,11 +16,17 @@ public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    @NotNull
     private String username;
+    @NotNull
     private String email;
+    @NotNull
     private String nom;
+    @NotNull
     private String prenom;
+    @NotNull
     private String tel;
+    @NotNull
     private String password;
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
@@ -28,9 +36,9 @@ public class User implements Serializable, UserDetails {
     @JoinTable(name = "membres", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "club_id"))
     private Set<Club> clubs = new HashSet<>();
-    @OneToMany(mappedBy = "president")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "president")
     private List<Club> club;
-    @ManyToMany(mappedBy = "user")
+    @ManyToMany(cascade = CascadeType.ALL,mappedBy = "user")
     private Set<Activite> activite = new HashSet<>();
     public Long getUserId() {
         return userId;

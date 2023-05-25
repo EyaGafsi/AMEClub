@@ -20,9 +20,9 @@ public class Activite {
     private float prixActivite;
     private String sujet;
     private String demandeStatus="aucune demande";
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Club club;
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_activite", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "activite_id"))
     private Set<User> user = new HashSet<>();

@@ -15,7 +15,7 @@ public class DemandeClub {
     private Integer nbMembre;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateCreation;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User user;
     private LocalDate dateEnvoi;
     private String status;

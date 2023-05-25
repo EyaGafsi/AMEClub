@@ -20,11 +20,11 @@ public class Club {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateCreation;
-    @ManyToMany(mappedBy = "clubs")
+    @ManyToMany(mappedBy = "clubs",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<User> users = new HashSet<>();
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User president;
-    @OneToMany(mappedBy = "club")
+    @OneToMany(mappedBy = "club",cascade = CascadeType.ALL)
     private List<Activite> activite;
 
     public Club(String nomClub, Integer nbMembre, Date dateCreation, Set<User> users, User president, List<Activite> activite) {

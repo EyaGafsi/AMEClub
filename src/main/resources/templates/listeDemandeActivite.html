@@ -35,7 +35,7 @@
           <tr class="data-row" th:each="c:${demandeActivite}" th:if="${c.status == 'en attente'  && c.club.president.username ==users.username}" th:attr="data-club-id=${c.club.clubId}">
             <td th:text="${c.nomActivite}"></td>
             <td th:text="${c.lieu}"></td>
-            <td th:text="${c.dateActivite}"></td>
+            <td th:text="${#dates.format(c.dateActivite, 'yyyy-MM-dd')}" ></td>
             <td th:text="${c.prixActivite}"></td>
             <td th:text="${c.sujet}"></td>
             <td th:text="${c.club.nomClub}"></td>

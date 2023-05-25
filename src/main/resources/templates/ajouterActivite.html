@@ -39,26 +39,26 @@
         </select>
 
         <input hidden="true" type="text" id="selectedClubText" name="clubId" readonly>
-
-        <script>
-          document.getElementById("clubSelect").addEventListener("change", function() {
-            var selectedOption = this.options[this.selectedIndex];
-            var selectedValue = selectedOption.value;
-
-            document.getElementById("selectedClubText").value = selectedValue;
-          });
-        </script>
-        <div>
-          <button type="submit" class="btn btn-primary">Ajouter</button>
-        </div>
-      </form>
     </div>
     <div th:if="${msg}">
       <p th:text="'Message: '+${msg}"/>
     </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </div>
+      </form>
+
     <br/>
     <br/>
   </div>
 </div>
+<script>
+  document.getElementById("clubSelect").addEventListener("change", function() {
+    var selectedOption = this.options[this.selectedIndex];
+    var selectedValue = selectedOption.value;
+
+    document.getElementById("selectedClubText").value = selectedValue;
+  });
+</script>
 </body>
 </html>

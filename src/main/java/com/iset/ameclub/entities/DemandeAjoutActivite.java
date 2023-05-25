@@ -16,7 +16,7 @@ public class DemandeAjoutActivite {
     private float prixActivite;
     private String sujet;
     private String status;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Club club;
     private LocalDate dateEnvoi;
     public DemandeAjoutActivite(String nomActivite, String lieu, Date dateActivite, float prixActivite, String sujet, Club club,String status) {

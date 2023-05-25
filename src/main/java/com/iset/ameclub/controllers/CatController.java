@@ -5,6 +5,7 @@ import com.iset.ameclub.dao.UserRepository;
 import com.iset.ameclub.entities.*;
 import com.iset.ameclub.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -107,6 +108,7 @@ public class CatController {
         appUser.setUsername(userForm.getUsername());
         appUser.setNom(userForm.getNom());
         appUser.setPrenom(userForm.getPrenom());
+        appUser.setPrenom(userForm.getPrenom());
         appUser.setTel(userForm.getTel());
         appUser.setEmail(userForm.getEmail());
         Set<Role> roles = new HashSet<Role>();
@@ -139,7 +141,7 @@ public class CatController {
         modelMap.addAttribute("msg", msg);
         return "createClub";
     }
-    @PreAuthorize("hasRole('VISITEUR') || hasRole('MEMBRE') || hasRole('PRESIDENT')")
+    @PreAuthorize("hasRole('MEMBRE') || hasRole('PRESIDENT')")
     @RequestMapping("/ListeActivite")
     public String listeActivite(@AuthenticationPrincipal UserDetails userDetails,
             ModelMap modelMap,@RequestParam(name = "nom", defaultValue = "") String nom,
@@ -159,7 +161,7 @@ public class CatController {
         }
         return "listeActivite";
     }
-    @PreAuthorize("hasRole('VISITEUR') || hasRole('MEMBRE') || hasRole('PRESIDENT')")
+    @PreAuthorize("hasRole('MEMBRE') || hasRole('PRESIDENT')")
     @PostMapping("/saveDemandeActivite")
     public String saveDemandeActivite(@RequestParam("userId") Long userId,@RequestParam("activiteId") Long activiteId,
                                     ModelMap modelMap) throws ParseException {
@@ -171,7 +173,7 @@ public class CatController {
         String msg = "Demande envoyée avec succès ";
         return "redirect:/ListeActivite";
     }
-    @PreAuthorize("hasRole('VISITEUR') || hasRole('MEMBRE') || hasRole('PRESIDENT')")
+    @PreAuthorize(" hasRole('MEMBRE') || hasRole('PRESIDENT')")
     @PostMapping("/annulerDemandeActivite")
     public String annulerDemandeActivite(@RequestParam("userId") Long userId,@RequestParam("activiteId") Long activiteId,
                                       ModelMap modelMap) throws ParseException {
@@ -330,7 +332,7 @@ public class CatController {
         demandeActivite.setStatus("accepté");
         userService.save(user);
         demandeActiviteService.saveDemandeActivite(demandeActivite);
-        return "redirect:/ListDemandeMembre";
+        return "redirect:/ListDemandeParticipation";
     }
     @PreAuthorize("hasRole('PRESIDENT')")
     @RequestMapping("/refuserDemandeParticipation")
@@ -537,7 +539,19 @@ public class CatController {
     @RequestMapping("/supprimerActivite")
     public String supprimerActivite(@RequestParam("id") Long id,@RequestParam(name = "nom", defaultValue = "") String nom, ModelMap
             modelMap, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "5") int size) {
-        activiteService.deleteActiviteById(id);
+try
+        {  Activite activite=activiteService.getActivite(id);
+            Set<User> participants = activite.getUser();
+            for (User participant : participants) {
+                participant.getActivite().remove(activite);
+                userService.save(participant);
+            }
+            activiteService.deleteActiviteById(id);}
+         catch (DataIntegrityViolationException e) {
+        String errorMessage = "Impossible de supprimer l'activité en raison de contraintes d'intégrité.";
+        modelMap.addAttribute("error", errorMessage);
+        return "error-page-activite";
+    }
         Page<Activite> formats = activiteService.getAllActiviteParPage(nom,page, size);
         modelMap.addAttribute("activite", formats);
         modelMap.addAttribute("pages", new int[formats.getTotalPages()]);
@@ -577,10 +591,14 @@ public class CatController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/updateClub")
-    public String updateClub(@ModelAttribute("club") Club club,@RequestParam(name = "nom", defaultValue = "") String nom,@RequestParam(name = "page", defaultValue = "1") int page,
+    public String updateClub(@ModelAttribute("club") Club updatedClub,@RequestParam(name = "nom", defaultValue = "") String nom,@RequestParam(name = "page", defaultValue = "1") int page,
                                  @RequestParam(name = "size", defaultValue = "5") int size,
                                  ModelMap modelMap )throws ParseException
-    {
+     {
+        Club club = clubService.getClub(updatedClub.getClubId());
+        club.setNomClub(updatedClub.getNomClub());
+        club.setNbMembre(updatedClub.getNbMembre());
+        club.setDateCreation(updatedClub.getDateCreation());
         clubService.updateClub(club);
         Page<Club> formats = clubService.getAllClubsParPage(nom,page, size);
         modelMap.addAttribute("clubs", formats);
@@ -591,32 +609,61 @@ public class CatController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/supprimerClub")
-    public String supprimerClub(@RequestParam("id") Long id, ModelMap
-            modelMap,
-                                  @RequestParam(name = "page", defaultValue = "0") int page,
-                                  @RequestParam(name = "size", defaultValue = "5") int size) {
+    public String supprimerClub(@RequestParam("id") Long id, ModelMap modelMap,
+                                @RequestParam(name = "page", defaultValue = "0") int page,
+                                @RequestParam(name = "size", defaultValue = "5") int size) {
+try{
+        Club club = clubService.getClub(id);
+        User president = club.getPresident();
+        Role rolePresident = roleRepository.findByName("ROLE_PRESIDENT");
+        Role roleMembre = roleRepository.findByName("ROLE_MEMBRE");
 
+        int presidentCount = president.getClubs().size();
+        if (presidentCount <= 1) {
+            president.getRoles().remove(rolePresident);
+        }
+        userService.save(president);
 
-        Club club=clubService.getClub(id);
-        User user=userService.getById(club.getPresident().getUserId());
-        Role role = roleRepository.findByName("ROLE_PRESIDENT");
-        user.getRoles().remove(role);
-        userServiceImp.saveUser(user);
-        clubService.save(club);
-        clubService.deleteClubById(id);
+        Set<User> membres = club.getUsers();
+        int membreCount = membres.size();
+        for (User membre : membres) {
+            if (membreCount <= 1) {
+                membre.getRoles().remove(roleMembre);
+            }
+            membre.getClubs().remove(club);
+            userService.save(membre);
+        }
+
+        List<Activite> activites = club.getActivite();
+        for (Activite activite : activites) {
+            Set<User> participants = activite.getUser();
+            for (User participant : participants) {
+                participant.getActivite().remove(activite);
+                userService.save(participant);
+            }
+            activiteService.deleteActiviteById(activite.getActiviteId());
+        }
+
+        clubService.deleteClubById(id);}
+         catch (DataIntegrityViolationException e) {
+            String errorMessage = "Impossible de supprimer le club en raison de contraintes d'intégrité.";
+            modelMap.addAttribute("error", errorMessage);
+            return "error-page";
+        }
         Page<User> formats = userServiceImp.getAllUserParPage(page, size);
         modelMap.addAttribute("clubs", formats);
         modelMap.addAttribute("pages", new int[formats.getTotalPages()]);
         modelMap.addAttribute("currentPage", page);
         modelMap.addAttribute("size", size);
+
         return "redirect:/ListeClub";
     }
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/showClub")
     public String showClub(@ModelAttribute("club") Club club,@ModelAttribute("president") User user,ModelMap modelMap)
-    { modelMap.addAttribute("club",user);
-
-        modelMap.addAttribute("club",user);
+    {
+        modelMap.addAttribute("club",club);
+        modelMap.addAttribute("president",user);
         return "ajouterClub";
     }
     @PreAuthorize("hasRole('ADMIN')")
@@ -627,7 +674,6 @@ public class CatController {
         club.setPresident(user);
         Role role = roleRepository.findByName("ROLE_PRESIDENT");
         user.getRoles().add(role);
-        user.getClub().add(club);
         userService.save(user);
         clubService.save(club);
         String msg = "club ajouté";

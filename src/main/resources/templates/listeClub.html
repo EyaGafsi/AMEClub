@@ -4,6 +4,16 @@
       layout:decorator="template">
 
 <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<style>
+  /* Ajoutez vos styles CSS personnalisés ici */
+
+  /* Style pour les boutons "S'inscrire", "Annuler" et "Rechercher" */
+  .pink-button {
+    background-color: pink;
+    color: white;
+  }
+</style>
+
 <head>
   <meta charset="utf-8">
   <title>Liste des Clubs</title>
@@ -12,10 +22,11 @@
 <div th:insert="template.html"></div>
 <section layout:fragment="navbar">
   <div class="container">
-   <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherClub}">
+    <form class="form-inline d-flex justify-content-center md-form form-sm mt-0" th:action="@{/rechercherClub}">
       <div class="input-group">
         <input  type="search" class="form-control rounded " placeholder="Rechercher" aria-label="Search" aria-describedby="search-addon" name="nom" id="searchInput">
-        <button type="submit" class="btn btn-outline-primary">Rechercher</button></div>
+        <button type="submit" class="btn btn-outline-primary pink-button">Rechercher</button>
+      </div>
     </form>
 
     <div class="card">
@@ -23,10 +34,15 @@
         Liste des Clubs
       </div>
       <div class="card-body">
-
-        <table class="table table-striped" >
+        <table class="table table-striped">
           <tr>
-            <th>Nom club</th><th>nombre membre</th><th>date de création</th> <th>nom du président</th><th></th><th></th><th sec:authorize="hasRole('ADMIN')"></th>
+            <th>Nom club</th>
+            <th>Nombre membre</th>
+            <th>Date de création</th>
+            <th>Nom du président</th>
+            <th></th>
+            <th></th>
+            <th sec:authorize="hasRole('ADMIN')"></th>
           </tr>
           <tr th:each="c:${clubs}">
             <td th:text="${c.nomClub}"></td>
@@ -34,38 +50,35 @@
             <td th:text="${#dates.format(c.dateCreation, 'yyyy-MM-dd')}"></td>
             <td th:text="${c.president.prenom}"></td>
             <td>
-            <td>
               <div th:if="${c.demandeStatus}=='en attente'" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
                 <form action="annulerDemandeMembre" method="post">
                   <input hidden="true" type="text" name="clubId" class="form-control" th:value="${c.clubId}" />
                   <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
-                  <button type="submit" class="btn btn-primary">annuler</button>
-                </form>    </div>
+                  <button type="submit" class="btn btn-primary pink-button">Annuler</button>
+                </form>
+              </div>
               <div th:if="${c.demandeStatus != 'en attente' && c.demandeStatus != 'aucune demande' && c.demandeStatus != 'annulé'}" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
                 <span th:text="${c.demandeStatus}"></span>
               </div>
               <div th:if="${c.demandeStatus =='aucune demande' || c.demandeStatus =='annulé'}" sec:authorize="hasRole('VISITEUR') or hasRole('MEMBRE') or hasRole('PRESIDENT')">
-              <form action="saveDemandeMembre" method="post">
-                <input hidden="true" type="text" name="clubId" class="form-control" th:value="${c.clubId}" />
-                <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
-                <button type="submit" class="btn btn-primary">s'inscrire</button>
-              </form>
+                <form action="saveDemandeMembre" method="post">
+                  <input hidden="true" type="text" name="clubId" class="form-control" th:value="${c.clubId}" />
+                  <input hidden="true" type="text" name="userId" class="form-control" th:value="${#authentication.principal.getUserId()}" />
+                  <button type="submit" class="btn btn-primary pink-button">S'inscrire</button>
+                </form>
               </div>
+            </td>
             <td sec:authorize="hasRole('ADMIN')">
-              <a class="btn btn-warning" th:href="@{/modifierClub(id=${c.clubId})}">
+              <a class="btn btn-warning pink-button" th:href="@{/modifierClub(id=${c.clubId})}">
                 Modifier
               </a>
             </td>
             <td sec:authorize="hasRole('ADMIN')">
-              <a class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?')"
+              <a class="btn btn-danger pink-button" onclick="return confirm('Etes-vous sûr ?')"
                  th:href="@{supprimerClub(id=${c.clubId}, page=${currentPage},size=${size})}">
                 Supprimer
               </a>
             </td>
-
-            </td>
-
-
           </tr>
         </table>
         <ul class="nav nav-pills">
@@ -75,7 +88,6 @@
                th:text="${status.index }"></a>
           </li>
         </ul>
-
       </div>
     </div>
   </div>

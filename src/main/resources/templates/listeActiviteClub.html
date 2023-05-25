@@ -29,7 +29,7 @@
           <tr th:each="a:${activite}">
             <td th:text="${a.nomActivite}"></td>
             <td th:text="${a.lieu}"></td>
-            <td th:text="${a.dateActivite}"></td>
+            <td th:text="${#dates.format(a.dateActivite, 'yyyy-MM-dd')}"></td>
             <td th:text="${a.prixActivite}"></td>
             <td th:text="${a.sujet}"></td>
             <!--     <td th:text="${a.club.nomClub}"></td>-->

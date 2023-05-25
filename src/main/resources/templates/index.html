@@ -6,10 +6,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
     body {
+      background-color: #f9f3f5;
       font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
+    }
+
+    .hero-section {
+      background-color: #fff;
+      padding: 50px;
+      text-align: center;
     }
 
     .hero-section h1 {
@@ -39,6 +43,7 @@
     }
 
     .content-section {
+      background-color: #f8f9fa;
       padding: 50px;
       text-align: center;
     }
@@ -53,6 +58,25 @@
       font-size: 18px;
       line-height: 1.5;
     }
+
+    .feature-box {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .feature-box h3 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .feature-box p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -60,12 +84,34 @@
 <div th:insert="template.html"></div>
 <div class="hero-section">
   <div class="container">
-    <h1 style="text-align: center">AMEClub </h1>
-    <p  style="text-align: center">Découvrez une nouvelle expérience de club</p>
-
+    <h1>AMEClub</h1>
+    <p>Découvrez une nouvelle expérience de club</p>
   </div>
 </div>
-
-
+<div class="content-section">
+  <div class="container">
+    <h2>Fonctionnalités d'AMEClub</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="feature-box">
+          <h3>Envoyer des demandes de participation</h3>
+          <p>Vous pouvez facilement envoyer des demandes de participation aux différents clubs de votre choix.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-box">
+          <h3>Ajouter votre club</h3>
+          <p>Si vous êtes propriétaire d'un club, vous pouvez l'ajouter à AMEClub pour le rendre visible aux utilisateurs intéressés.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-box">
+          <h3>Suivre vos activités</h3>
+          <p>Avec AMEClub, vous pouvez suivre toutes vos activités de club, y compris les événements à venir et les participations passées.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

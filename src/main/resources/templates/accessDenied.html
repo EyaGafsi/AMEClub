@@ -3,14 +3,51 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="template">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <meta charset="utf-8">
   <title>Error</title>
+  <style>
+    body {
+      background-color: #f9f3f5;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    .error-message {
+      color: #da3964;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .error-icon {
+      width: 100px;
+      height: 100px;
+      background-color: #da3964;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .error-icon i {
+      color: #ffffff;
+      font-size: 48px;
+    }
+  </style>
 </head>
 <body>
 <div th:insert="template.html"></div>
 <div layout:fragment="Mycontent">
   <div class="container">
-    <h3 class="text-danger">Vous n'êtes pas autorisé</h3>
+    <div class="error-icon">
+      <i class="fas fa-exclamation-circle"></i>
+    </div>
+    <h3 class="error-message">Vous n'êtes pas autorisé</h3>
   </div>
 </div>
 </body>

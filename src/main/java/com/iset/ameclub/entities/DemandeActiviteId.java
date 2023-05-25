@@ -1,5 +1,6 @@
 package com.iset.ameclub.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -7,11 +8,11 @@ import java.io.Serializable;
 
     @Embeddable
     public class DemandeActiviteId implements Serializable {
-        @ManyToOne
+        @ManyToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "user_id", referencedColumnName = "userId")
         private User user;
 
-        @ManyToOne
+        @ManyToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "activite_id", referencedColumnName = "activiteId")
         private Activite activite;
 

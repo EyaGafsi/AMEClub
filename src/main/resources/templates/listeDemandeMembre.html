@@ -34,6 +34,7 @@
             <th>Nom </th><th>prénom</th><th>date d'envoi</th> <th>nom du club</th><th></th>
           </tr>
           <tr class="data-row" th:each="c:${demandeMembre}" th:if="${c.status == 'en attente' && c.id.club.president.username ==users.username}" th:attr="data-club-id=${c.id.club.ClubId}">
+            <td th:text="${c.id.user.username}"></td>
             <td th:text="${c.id.user.nom}"></td>
             <td th:text="${c.id.user.prenom}"></td>
             <td th:text="${c.dateEnvoi}"></td>
@@ -51,7 +52,7 @@
           <li th:each="page,status:${pages}">
             <a th:class="${status.index==currentPage?'btn btn-primary':'btn'}"
                th:href="@{ListDemandeMembre(nom=${nom},page=${status.index}, size=${size} )}"
-               th:text="${status.index }"></a>
+               th:text="${status.index}"></a>
           </li>
         </ul>
 

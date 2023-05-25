@@ -27,7 +27,7 @@
 
         <select name="clubId" id="clubFilter" onchange="applyFilter()">
           <option value="">Sélectionnez un club</option>
-          <option th:each="club : ${clubs}" th:value="${club.ClubId}" th:text="${club.nomClub}" th:if="${club.president.username ==users.username}"  ></option>
+          <option th:each="club : ${clubs}" th:value="${club.clubId}" th:text="${club.nomClub}" th:if="${club.president.username ==users.username}"  ></option>
         </select>
         <table class="table table-striped" id="table">
           <tr>

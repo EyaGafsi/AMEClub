@@ -30,10 +30,10 @@
           <tr th:each="a:${activites}">
             <td th:text="${a.nomActivite}"></td>
             <td th:text="${a.lieu}"></td>
-            <td th:text="${#dates.format(a.dateActivite, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(a.dateActivite, 'yyyy-MM-dd')}" ></td>
             <td th:text="${a.prixActivite}"></td>
             <td th:text="${a.sujet}"></td>
-            <td th:text="${a.club.nomClub}"></td>
+            <!--<td th:text="${a.club.nomClub}"></td>-->
             <td>
               <div th:if="${a.demandeStatus}=='en attente'">
                 <form action="annulerDemandeActivite" method="post">

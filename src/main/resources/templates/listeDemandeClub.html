@@ -27,7 +27,7 @@
 
         <table class="table table-striped" >
           <tr>
-            <th>Nom </th><th>nombre membres</th> <th>date de création</th><th>nom du president</th><th>prenom du president</th><th>date d'envoi</th>
+            <th>Nom </th><th>nombre membres</th> <th>date de création</th><th>nom du president</th><th>prenom du president</th><th>date d'envoi</th><th></th><th></th>
           </tr>
           <tr class="data-row" th:each="c:${demandeClub}" th:if="${c.status == 'en attente' }">
             <td th:text="${c.nomClub}"></td>
@@ -39,7 +39,7 @@
             <td>
               <a onclick="return confirm('Etes-vous sûr ?')"
                  class="btn btn-success" th:href="@{accepterDemandeClub(demandeId=${c.demandeId},size=${size})}">accepter</a>
-
+            </td><td>
               <a onclick="return confirm('Etes-vous sûr ?')"
                  class="btn btn-danger" th:href="@{refuserDemandeClub(demandeId=${c.demandeId},size=${size})}">refuser</a>
             </td>
